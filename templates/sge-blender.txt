@@ -182,6 +182,7 @@ Order = 40
 [cluster sge-blender]
 FormLayout = selectionpanel
 IconUrl = https://s3.amazonaws.com/download.cyclecomputing.com/logos/blender-192x170.png
+Category = Rendering and Animation
 
 # Enable/disable autoscaling
 # The scheduler load will determine the number of execute machines that are started, machines will terminate themselves if they are idle
