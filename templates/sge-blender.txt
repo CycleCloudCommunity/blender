@@ -46,7 +46,7 @@ Order = 5
 Description = "Select the Persistent Filesystem"
 Order = 10
 
-	[[[parameter FileSystemClusterName]]]
+	[[parameter FileSystemClusterName]]
 	Label = Filesystem Cluster
 	Description = The filesystem to mount
 	Config.Plugin = pico.form.QueryDropdown
@@ -54,12 +54,12 @@ Order = 10
 	Config.SetDefault = false
 	Config.Required = true
 	
-	[[[parameter MountPoint]]]
+	[[parameter MountPoint]]
 	Label = Mount Point
 	Description = The path at which to mount the Filesystem
 	DefaultValue = /data
 
-	[[[parameter ExportPath]]]
+	[[parameter ExportPath]]
 	Label = Export Path
 	Description = The path exported by the file system
 	DefaultValue = /mnt/exports/avere
