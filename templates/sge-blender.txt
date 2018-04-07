@@ -10,7 +10,7 @@ Order = 1
         [[[parameter Blender]]]
         HideLabel = true
         Config.Plugin = pico.widget.HtmlTemplateWidget
-        Config.Template := "<table><tr><td><img src='https://s3.amazonaws.com/download.cyclecomputing.com/logos/blender-socket-192x60.png' width='192' height='60'></td></tr><tr><td><p>This cluster installs Blender alongside SGE for Batch Rendering.</p><br><p>Blender is the free and open source 3D creation suite. It supports the entirety of the 3D pipeline—modeling, rigging, animation, simulation, rendering, compositing and motion tracking, even video editing and game creation.</p><br><p>See the <a href=\"https://www.blender.org/\" target=\"_blank\">Blender project site</a>for an overview.</p></td></tr></table>"
+        Config.Template := "<table><tr><td><img src='https://s3.amazonaws.com/download.cyclecomputing.com/logos/blender-socket-192x60.png' width='192' height='60'></td></tr><tr><td><p>This cluster installs Blender alongside SGE for Batch Rendering.</p><br><p>Blender is the free and open source 3D creation suite. It supports the entirety of the 3D pipeline—modeling, rigging, animation, simulation, rendering, compositing and motion tracking, even video editing and game creation.</p><br><p>See the <a href=\"https://www.blender.org/\" target=\"_blank\">Blender project site</a> for an overview.</p></td></tr></table>"
 
 
 [parameters General Settings]
@@ -70,7 +70,17 @@ Order = 20
     [[parameters Software]]
     Description = Specify the base OS and optional cluster-init spec(s) from your locker.
     Order = 10
-    
+
+
+        [[[parameter ClusterUserName]]]
+        Label = Default User
+        DefaultValue = cluster.user
+        Hidden = true
+
+        [[[parameter ClusterUserPubKey]]]
+        Label = Default User Pub. Key
+        Hidden = true
+
         [[[parameter DefaultClusterInitSpecs]]]
         Label = Default Specs
         Description = Cluster init specs to apply to all nodes
@@ -91,23 +101,17 @@ Order = 20
 [parameters Compute Backend]
 Order = 30
 
-    [[parameter ClusterUserName]]
-    Label = Default User
-    DefaultValue = cluster.user
-    Hidden = true
+    [[parameters Nodes]]
+    Order = 10
     
-    [[parameter ClusterUserPubKey]]
-    Label = Default User Pub. Key
-    Hidden = true
-
-    [[[parameter MachineType]]]
-    Label = Machine Type
-    Description = The machine type for all nodes
-    Config.Plugin = pico.form.QueryDropdown
-    Config.Query := "select Name as Label, [Name=Name; GPUCount=GPUCount] as Value from Cloud.MachineType where GPU == True && Provider == ${CloudProvider}"
-    Config.Parameters := { "CloudProvider" }
-    Config.SetDefault = true
-    Config.Required = true
+        [[[parameter MachineType]]]
+        Label = Machine Type
+        Description = The machine type for all nodes
+        Config.Plugin = pico.form.QueryDropdown
+        Config.Query := "select Name as Label, [Name=Name; GPUCount=GPUCount] as Value from Cloud.MachineType where GPU == True && Provider == ${CloudProvider}"
+        Config.Parameters := { "CloudProvider" }
+        Config.SetDefault = true
+        Config.Required = true
 
     [[parameters Auto-Scaling]]
     Description = "The cluster can autoscale to the workload, adding execute hosts as jobs are queued. To enable this check the box below and choose the initial and maximum core counts for the cluster"
@@ -182,7 +186,7 @@ Order = 40
 [cluster sge-blender]
 FormLayout = selectionpanel
 IconUrl = https://s3.amazonaws.com/download.cyclecomputing.com/logos/blender-192x170.png
-Category = Rendering and Animation
+Category = Animation and Rendering
 
 # Enable/disable autoscaling
 # The scheduler load will determine the number of execute machines that are started, machines will terminate themselves if they are idle
