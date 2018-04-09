@@ -15,6 +15,7 @@ See [Blender](https://www.blender.org/) for details and documentation.
     - [Configuring the Project](#configuring-the-project)
     - [Deploying the Project](#deploying-the-project)
     - [Importing the Sample SGE Cluster Template](#importing-the-sample-sge-cluster-template)
+    - [Running the Demos](#running-the-demos)
 
 <!-- markdown-toc end -->
 
@@ -143,4 +144,7 @@ cluster.user:~$ cd /data/classroom/
 cluster.user:/data/classroom$ bash -x submit_pipeline.sh
 ```
 
-Each example submits a 2-stage pipepline: [ 1. Render frames -> 2. Convert Frames to mp4 ]
+Each example submits a basic 2-stage pipeline:
+
+  1. Render frames
+  2. Convert Frames to mp4
