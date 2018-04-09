@@ -104,14 +104,19 @@ Order = 30
     [[parameters Nodes]]
     Order = 10
     
-        [[[parameter MachineType]]]
-        Label = Machine Type
-        Description = The machine type for all nodes
-        Config.Plugin = pico.form.QueryDropdown
-        Config.Query := "select Name as Label, [Name=Name; GPUCount=GPUCount] as Value from Cloud.MachineType where GPU == True && Provider == ${CloudProvider}"
-        Config.Parameters := { "CloudProvider" }
-        Config.SetDefault = true
-        Config.Required = true
+        [[[parameter MasterMachineType]]]
+        Label = Master Type
+        Description = The machine type for scheduler master and shared filer.
+        ParameterType = Cloud.MachineType
+            [[[[record Config.ProviderDefaults]]]]
+            Azure = Standard_A4
+
+        [[[parameter ExecuteMachineType]]]
+        Label = Execute Type
+        Description = The machine type for execute nodes
+        ParameterType = Cloud.MachineType
+            [[[[record Config.ProviderDefaults]]]]
+            Azure = Standard_A4
 
     [[parameters Auto-Scaling]]
     Description = "The cluster can autoscale to the workload, adding execute hosts as jobs are queued. To enable this check the box below and choose the initial and maximum core counts for the cluster"
@@ -198,7 +203,6 @@ Autoscale = $Autoscale
     # Extends = foo to the nodes that should inherit the definitions from foo.
     [[node defaults]]
     Credentials = $Credentials
-    MachineType = ${MachineType.Name}
     ImageName = cycle.image.ubuntu16
     SubnetId = $SubnetId
     Region = $Region
@@ -216,15 +220,6 @@ Autoscale = $Autoscale
         [[[configuration blender]]]
         version = 2.79b-linux-glibc219
         
-        [[[configuration nvidia]]]
-        # Currently, 384.111 is currently the latest version supported with the Meltdown patches
-        # - Since we're overriding the driver version, don't install the driver from the CUDA package
-        driver.build = 384.111
-        cuda.install_driver = false
-        cuda.version = 8.0
-        cuda.build = 8.0.61_375.26_linux
-        cudnn.version = 6.0
-
         [[[configuration cyclecloud.mounts.nfs]]]
         type = nfs
         export_path = $ExportPath
@@ -234,10 +229,10 @@ Autoscale = $Autoscale
         [[[network-interface eth0]]]
         AssociatePublicIpAddress = false
 
-        [[[cluster-init nvidia:driver:1.1.0]]]
         [[[cluster-init blender:default:1.0.0]]]
 
     [[node master]]
+    MachineType = $MasterMachineType
     IsReturnProxy = $ReturnProxy
     AdditionalClusterInitSpecs = $MasterSpecs
 
@@ -245,12 +240,6 @@ Autoscale = $Autoscale
         # This is the Chef runlist to use for the node, to customize this add customized recipes and/or roles
         # Example: run_list=role[sge_master_role], role[monitor], recipe[mysql::server]
         run_list = role[sge_master_role]        
-
-        # cycle_server.admin.pass=123456
-
-        [[[configuration nvidia]]]
-        # IMPORTANT: cuda profile generation is for driver-only nodes (it will fail on the cuda host)
-        cuda.disable_profile = true
 
         # Configure Azure external input endpoints (for example SSH)
         [[[input-endpoint SSH]]]
@@ -264,11 +253,9 @@ Autoscale = $Autoscale
         [[[network-interface eth0]]]
         AssociatePublicIpAddress = $MasterPublicIp
 
-        [[[cluster-init nvidia:cuda:1.1.0]]]
-        [[[cluster-init nvidia:sge:1.1.0]]]
-
 
     [[nodearray execute]]
+    MachineType = $ExecuteMachineType
     AdditionalClusterInitSpecs = $ExecuteSpecs
 
     # The initial number of cores of this type to start when the cluster starts
@@ -276,8 +263,6 @@ Autoscale = $Autoscale
 
     # The maximum number of cores to start when the cluster is configured for autoscaling
     MaxCoreCount = $MaxExecuteCoreCount
-
-    CoreCount = ${MachineType.GPUCount}
 
     # Azure Low Priority Instances?
     BatchAccount = $azureBatchAccount
@@ -287,11 +272,5 @@ Autoscale = $Autoscale
         [[[configuration]]]
         run_list = role[sge_execute_role]
 
-        # OPTIONAL: cluster will also use a Consumable Resource to ensure that only GPUCount gpu jobs
-        #           run per node.   Without this setting, regular CPU jobs will be allowed to fill the
-        #           node's remaining CPUs.  With this setting, the node will ONLY be used for GPU jobs.
-        gridengine.slots = ${MachineType.GPUCount}
-
-        [[[cluster-init nvidia:sge:1.1.0]]]
 
 
