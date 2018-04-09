@@ -7,7 +7,7 @@ mkdir -p /data/benchmark/images
 
 cd /data/benchmark
 
-qsub -N render_benchmark -t 1:10 render.sh
+qsub -N render_benchmark -t 1-10 render.sh
 qsub -hold_jid render_benchmark convert.sh
 
 
