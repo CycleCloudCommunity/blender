@@ -4,6 +4,7 @@
 #$ -cwd
 #$ -o /data/logs -e /data/logs
 #$ -N render_classroom
+#$ -t 1:10
 
 mkdir -p /data/classroom/images
 
