@@ -8,15 +8,13 @@ See [Blender](https://www.blender.org/) for details and documentation.
 **NOTE** This project does not **yet** include a VDI client for the Blender UI.
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
-
 **Table of Contents**
 
-- [IBM Spectrum Symphony](#ibm-spectrum-symphony)
+- [Blender](#blender)
     - [Pre-Requisites](#pre-requisites)
     - [Configuring the Project](#configuring-the-project)
     - [Deploying the Project](#deploying-the-project)
-    - [Importing the Cluster Template](#importing-the-cluster-template)
-    - [Using the Project Specs in Other Clusters](#using-the-project-specs-in-other-clusters)
+    - [Importing the Sample SGE Cluster Template](#importing-the-sample-sge-cluster-template)
 
 <!-- markdown-toc end -->
 
@@ -115,3 +113,34 @@ To import the cluster:
     ```
 
 
+## Running the Demos ##
+
+The project includes several Blender demo scripts.
+
+To use the demos, first download the 3 demos from the Blender project site:
+  * (https://download.blender.org/demo/test/benchmark.zip)
+  * (https://download.blender.org/demo/test/classroom.zip)
+  * (https://download.blender.org/demo/test/pabellon_barcelona_v1.scene_.zip)
+  
+Stage the downloaded `.zip` files in the ``blobs/examples`` directory, then re-upload the project.
+
+Next, launch the SGE-Blender cluster and wait for it to converge.
+
+Once the cluster is up and ready, log in and stage the examples using the ``fetch`` scripts:
+
+``` bash
+$ cyclecloud connect -c blender master
+~$ sudo su -
+~# cd /mnt/cluster-init/blender/default/files/examples/
+~# for SAMPLE in benchmark  classroom  pabellon; do pushd $SAMPLE; ./fetch_sample.sh; popd; done
+```
+
+That will stage the data files in the ``/data`` directory.  Each example contains a pipeline submission script : ``submit_pipeline.sh`` which submits a simple animation pipeline.   For example, to render the classroom example:
+
+``` bash
+$ sudo su - cluster.user
+cluster.user:~$ cd /data/classroom/
+cluster.user:/data/classroom$ bash -x submit_pipeline.sh
+```
+
+Each example submits a 2-stage pipepline: [ 1. Render frames -> 2. Convert Frames to mp4 ]
