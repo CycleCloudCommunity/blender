@@ -1,6 +1,7 @@
 #!/bin/bash
 
-apt-get install -y unzip
+set -e
+set -x
 
 cd /tmp
 
